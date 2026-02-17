@@ -51,13 +51,21 @@ server.on('error', (err) => {
 // Attempt MongoDB connection but do not prevent the server from starting.
 // Connect to MongoDB (non-blocking for dev).
 let mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/homecare';
-// sanitize: trim and remove UTF-8 BOM if present
+// sanitize: trim, remove UTF-8 BOM, and strip surrounding quotes if present
 if (typeof mongoUri === 'string') {
   mongoUri = mongoUri.trim().replace(/^\uFEFF/, '');
+  // remove surrounding single or double quotes
+  mongoUri = mongoUri.replace(/^['"]|['"]$/g, '');
 }
 // validate scheme before attempting connection
 if (!/^mongodb(\+srv)?:\/\//i.test(mongoUri)) {
+  // mask password for safe logging: replace :password@ with :***@
+  let masked = String(mongoUri).replace(/:(?:[^:@]+)@/, ':***@');
+  // log only first 120 chars to avoid revealing secrets
+  if (masked.length > 120) masked = masked.slice(0, 117) + '...';
   console.error('MongoDB connection error: invalid URI scheme. Skipping connection.');
+  console.error('  Provided MONGODB_URI (masked):', masked);
+  console.error('  Scheme check failed for value starting with:', (mongoUri || '').slice(0, 12));
 } else {
   mongoose.connect(mongoUri)
     .then(() => {
