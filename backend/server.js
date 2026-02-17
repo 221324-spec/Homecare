@@ -24,6 +24,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// Health check endpoint (used by Koyeb to verify the app is running)
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 // Routes
 const bookingsRouter = require('./routes/bookings');
 app.use('/api/bookings', bookingsRouter);
