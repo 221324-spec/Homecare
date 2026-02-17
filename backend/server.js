@@ -38,6 +38,9 @@ app.use('/api/contact', contactRouter);
 // Quick request (hero / quick booking) endpoint
 const requestRouter = require('./routes/request');
 app.use('/api/request-service', requestRouter);
+// Admin routes (protected)
+const adminRouter = require('./routes/admin');
+app.use('/api/admin', adminRouter);
 
 // Start the HTTP server immediately so frontend can reach it during dev.
 const server = app.listen(PORT, '0.0.0.0', () => {

@@ -46,7 +46,9 @@ const Admin = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(`${API_BASE}/api/bookings`);
+      // send Basic auth header using the username/password entered at login
+      const auth = btoa(`${username}:${password}`);
+      const res = await fetch(`${API_BASE}/api/admin/bookings`, { headers: { Authorization: `Basic ${auth}` } });
       if (!res.ok) throw new Error(`Failed to fetch bookings: ${res.status}`);
       const data = await res.json();
       setBookings(data || []);
