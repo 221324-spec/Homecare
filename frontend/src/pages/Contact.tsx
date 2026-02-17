@@ -3,6 +3,7 @@ import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock, FaUserMd, FaCalendarAlt, 
 import { useState } from 'react';
 
 const Contact = () => {
+  const API_BASE = import.meta.env.VITE_API_BASE;
   const [formData, setFormData] = useState({
     fullName: '',
     phoneNumber: '',
@@ -21,7 +22,12 @@ const Contact = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/bookings', {
+      if (!API_BASE) {
+        setSubmitStatus('Server not configured. Contact the site administrator.');
+        return;
+      }
+
+      const response = await fetch(`${API_BASE}/api/bookings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -24,6 +24,7 @@ import {
 } from 'react-icons/fa';
 
 const Home = () => {
+  const API_BASE = import.meta.env.VITE_API_BASE;
   const [formData, setFormData] = useState({
     fullName: '',
     phoneNumber: '',
@@ -45,7 +46,12 @@ const Home = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/bookings', {
+      if (!API_BASE) {
+        setSubmitStatus('Server not configured. Contact the site administrator.');
+        return;
+      }
+
+      const response = await fetch(`${API_BASE}/api/bookings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -154,11 +160,16 @@ const Home = () => {
                           serviceRequired: formData.serviceRequired,
                           email: formData.email,
                         };
-                        const res = await fetch('http://localhost:5000/api/request-service', {
+                        if (!API_BASE) {
+                          setQuickStatus('Server not configured. Contact the site administrator.');
+                          setQuickSuccess(false);
+                        } else {
+                          const res = await fetch(`${API_BASE}/api/request-service`, {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify(payload),
-                        });
+                          });
+                        }
                         const json = await res.json().catch(() => ({}));
                         if (res.ok) {
                           // prefer server-reported emailSent when available
